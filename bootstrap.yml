@@ -4,12 +4,6 @@
 - hosts: all
   become: yes
   tasks:
-    - name: Push ssh key
-      authorized_key:
-        user: ubuntu
-        state: present
-        key: https://github.com/jtpsh.keys
-
     - name: "Docker CE: Prep required packages"
       apt:
         state: present
