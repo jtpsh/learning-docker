@@ -1,0 +1,49 @@
+---
+# Run the this playbook as ansible-playbook -i inventory playbook --ask-become-pass
+
+- hosts: all
+  become: yes
+  tasks:
+    - name: Push ssh key
+      authorized_key:
+        user: ubuntu
+        state: present
+        key: https://github.com/jtpsh.keys
+
+    - name: "Docker CE: Prep required packages"
+      apt:
+        state: present
+        name: "{{ item }}"
+      with_items:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+
+    - name: "Docker CE: Add GPG key"
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: "Docker CE: Add repo"
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+        filename: docker-ce
+
+    - name: "Docker CE: Install Docker CE"
+      apt:
+        state: present
+        name: "{{ item }}"
+        update_cache : yes
+      with_items:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: "Docker CE: Verify Docker CE installaton"
+      command: docker run hello-world
+      register: docker_cmd
+
+    - debug: msg="{{ docker_cmd.stdout_lines }}"
