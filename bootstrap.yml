@@ -1,5 +1,5 @@
 ---
-# Run the this playbook as ansible-playbook -i inventory playbook --ask-become-pass
+# Run the this playbook as ansible-playbook -i inventory bootstrap.yml --ask-become-pass
 
 - hosts: all
   become: yes
